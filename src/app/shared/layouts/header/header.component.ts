@@ -10,11 +10,9 @@ import { CommonModule } from '@angular/common';
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
- // isAuthenticated$;
   constructor(
     private tokenService: TokenService,
   ) {
-  //  this.isAuthenticated$ = this.tokenService.isAuthentication;
   }
 
 }

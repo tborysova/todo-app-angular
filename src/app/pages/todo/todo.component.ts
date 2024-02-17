@@ -24,7 +24,6 @@ export class TodoComponent implements OnInit {
   todoForm!: FormGroup;
   todos: ITodo[] = [];
   allTodos: ITodo[] = [];
-  // allTodos: ITodo[] = [];
   todoStatus = ITodoStatus;
   isSlidePanelOpen = false;
   todoId: number | null = null;
