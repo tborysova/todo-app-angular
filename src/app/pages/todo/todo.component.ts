@@ -73,6 +73,8 @@ export class TodoComponent implements OnInit {
     } else {
       this.todoForm.markAllAsTouched();
     }
+
+    this.onCloseSlidePanel();
   }
 
   onLoadTodoForm(item: ITodo) {
