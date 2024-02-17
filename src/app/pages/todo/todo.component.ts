@@ -3,7 +3,6 @@ import {
   ITodoStatus,
   TodoCardComponent,
 } from '../../shared/components/todo-card/todo-card.component';
-import { TodoService } from '../../core/services/todo.service';
 import { ITodo } from '../../core/models/todo.model';
 import { SlidePanelComponent } from '../../shared/ui/slide-panel/slide-panel.component';
 import {
@@ -24,30 +23,24 @@ import {
 export class TodoComponent implements OnInit {
   todoForm!: FormGroup;
   todos: ITodo[] = [];
+  allTodos: ITodo[] = [];
   todoStatus = ITodoStatus;
   isSlidePanelOpen = false;
   todoId: number | null = null;
   filterByStatus = '';
   addLocally = true;
-  constructor(private todoService: TodoService, private fb: FormBuilder) {
+
+  constructor(private fb: FormBuilder) {
     this.todoForm = this.fb.group({
-      title: new FormControl('', [Validators.required]),
-      description: new FormControl('', [Validators.required]),
-      status: new FormControl('OPEN', [Validators.required]),
+      title: new FormControl('', Validators.required),
+      description: new FormControl('', Validators.required),
+      status: new FormControl('OPEN', Validators.required),
     });
   }
 
   ngOnInit(): void {
-    this.getAllTodos();
   }
-
-  getAllTodos() {
-    this.todoService.getAllTodo(this.filterByStatus).subscribe({
-      next: (response) => {
-        this.todos = response.data;
-      },
-    });
-  }
+  
 
   openSlidePanel() {
     this.isSlidePanelOpen = true;
@@ -58,41 +51,30 @@ export class TodoComponent implements OnInit {
   }
 
   onFilterByStatus(status: string) {
+    console.log("Filtering by status:", status); // Debug log
     this.filterByStatus = status;
-    this.getAllTodos();
+    if (status === '') {
+      this.todos = [...this.allTodos];
+    } else {
+      this.todos = this.allTodos.filter(todo => todo.status === status);
+    }
   }
+
 
   onSubmit() {
     if (this.todoForm.valid) {
-      if (this.addLocally) {
-        // Add the todo locally
-        const newTodo: ITodo = {
-          ...this.todoForm.value,
-          id: Date.now() // Simulate a unique ID
-        };
-        this.todos.push(newTodo);
-        this.onCloseSlidePanel();
-      } else {
-        // Existing logic for server-side addition
-        if (this.todoId) {
-          this.todoService.updateTodo(this.todoId, this.todoForm.value).subscribe({
-            next: () => {
-              this.getAllTodos();
-              this.onCloseSlidePanel();
-            },
-          });
-        } else {
-          this.todoService.addTodo(this.todoForm.value).subscribe({
-            next: () => {
-              this.getAllTodos();
-              this.onCloseSlidePanel();
-            },
-          });
-        }
-      }
+      const newTodo: ITodo = {
+        ...this.todoForm.value,
+        id: Date.now(), // Simulate a unique ID
+      };
+      this.allTodos.push(newTodo); // Always add to the master list
+      this.onFilterByStatus(this.filterByStatus); // Reapply the current filter
+      this.todoForm.reset({ status: 'OPEN' }); // Reset the form for the next input
     } else {
       this.todoForm.markAllAsTouched();
     }
+
+    this.onCloseSlidePanel();
   }
 
   onLoadTodoForm(item: ITodo) {
@@ -106,8 +88,9 @@ export class TodoComponent implements OnInit {
     this.openSlidePanel();
   }
 
+ 
   onDeleteTodo(todoToDelete: ITodo): void {
-    // Implement deletion logic here, e.g., filtering out the deleted todo
-    this.todos = this.todos.filter(todo => todo !== todoToDelete);
+    this.allTodos = this.allTodos.filter(todo => todo.id !== todoToDelete.id);
+    this.onFilterByStatus(this.filterByStatus); // Reapply the current filter to update the displayed list
   }
 }  
