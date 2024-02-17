@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { TokenService } from '../../../core/services/token.service';
 import { CommonModule } from '@angular/common';
-// import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -11,11 +10,11 @@ import { CommonModule } from '@angular/common';
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
-  isAuthenticated$;
+ // isAuthenticated$;
   constructor(
     private tokenService: TokenService,
   ) {
-    this.isAuthenticated$ = this.tokenService.isAuthentication;
+  //  this.isAuthenticated$ = this.tokenService.isAuthentication;
   }
 
 }

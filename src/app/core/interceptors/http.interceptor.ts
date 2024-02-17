@@ -13,7 +13,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
       if (value) {
         req = req.clone({
           setHeaders: {
-            // Authorization: `Bearer ${tokenService.getToken()}`,
+
           },
         });
       }
@@ -23,7 +23,6 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((e: HttpErrorResponse) => {
       if (e.status === 401) {
-        // tokenService.removeToken();
         router.navigate(['']);
       }
       const error = e.error?.error?.message || e.statusText;
